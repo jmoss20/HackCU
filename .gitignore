@@ -1,3 +1,4 @@
 vision/data
 .DS_Store
 venv/
+*.py.swp
