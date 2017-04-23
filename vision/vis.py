@@ -2,8 +2,12 @@ import cv2
 import numpy as np
 from net import *
 import sys
+import logging
 
-from websocket import create_connection
+logging.getLogger('socketIO-client').setLevel(logging.DEBUG)
+logging.basicConfig()
+
+from socketIO_client import SocketIO, LoggingNamespace
 
 from DataLoader import LABELS
 
@@ -77,14 +81,19 @@ class Cam:
 
 def main():
 	uid = sys.argv[1]
-	if sys.argv[4] != "local":
-		ws = create_connection(sys.argv[4])
+	#if sys.argv[4] != "local":
+	#	with SocketIO(sys.argv['4'], 3000, LoggingNamespace) as socketIO:
 
 	c = Cam()
 
 	n = Net(sys.argv[2], sys.argv[3])
 	n.build()
 	n.load_model()
+
+	socketIO = SocketIO(sys.argv[4], 80, LoggingNamespace)
+	print "Loaded Socket"
+
+	last_emoji = 0;
 
 	while True:
 		try:
@@ -102,15 +111,18 @@ def main():
 		emo = m.index(max(m))
 		print LABELS[emo], conf
 
-		if sys.argv[4] != "local":
-			ws.send({"user_id": uid, "emoji": emo, "confidence": conf})
+		if sys.argv[4] != "local" and last_emoji != emo:
+			socketIO.emit('emojis',{"user_id": uid, "emoji": emo, "confidence": conf})
+			print "emitted"
+
+		last_emoji = emo
 
 		if cv2.waitKey(1) == 27:
 			break
 
-	if sys.argv[4] != "local":
-		ws.send({"user_id": uid, "emoji": -1, "confidence": conf})
-		ws.close()
+	#if sys.argv[4] != "local":
+	#	ws.send({"user_id": uid, "emoji": -1, "confidence": conf})
+	#	ws.close()
 	cv2.destroyAllWindows()
 
 if __name__ == '__main__':
