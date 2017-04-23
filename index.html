@@ -1,0 +1,12 @@
+<script src="socket.io/socket.io.js"></script>
+<script>
+    var socket = io().connect('http://localhost:3000');
+    function send(data) {
+        socket.emit('message', data);
+        document.getElementById("sender").value = "";
+    };
+</script>
+
+<h1>Welcome</h1>
+
+<input type="text" id="sender" onchange="send(this.value)" placeholder="Send a Message"> 
