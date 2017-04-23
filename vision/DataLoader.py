@@ -8,7 +8,7 @@ LABELS = ['angry', 'disgusted', 'fearful', 'happy', 'sad', 'surprised', 'neutral
 
 def one_hot(i):
 	r = np.zeros(len(LABELS))
-	r[i] = 1.0
+	r[i] = 1
 	return r
 
 def to_img(x):
@@ -33,7 +33,13 @@ class Data:
 		self.X_train, self.y_train = zip(*D_train)
 		self.X_validate, self.y_validate = zip(*D_validate)
 		self.X_test, self.y_test = zip(*D_test)
-		print len(self.X_train), len(self.y_train)
+		
+		self.X_train = np.asarray(self.data.X_train).reshape(len(self.data.X_train), 48, 48, 1)
+		self.X_validate = np.asarray(self.data.X_validate).reshape(len(self.data.X_validate), 48, 48, 1)
+		self.X_test = np.asarray(self.data.X_test).reshape(len(self.data.X_test), 48, 48, 1)
+		self.y_train = np.asarray(self.data.y_train).reshape(len(self.data.y_train), 7)
+		self.y_tune = np.asarray(self.data.y_tune).reshape(len(self.data.y_tune), 7)
+		self.y_test = np.asarray(self.data.y_test).reshape(len(self.data.y_test), 7)
 
 class FER_2013:
 	@staticmethod

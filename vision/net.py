@@ -49,8 +49,7 @@ class Net:
 		print '>> Training model on training set'
 		print len(self.data.X_train), np.asarray(self.data.y_train).shape
 		self.model.fit(
-			np.asarray(self.data.X_train).reshape(len(self.data.X_train), 48, 48, 1), 
-			np.asarray(self.data.y_train).reshape(len(self.data.y_train), 7),
+			X_train, y_train
 			validation_set = (self.data.X_validate, self.data.y_validate),
 			n_epoch = 100,
 			batch_size = 30,
