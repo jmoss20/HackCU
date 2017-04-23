@@ -77,8 +77,8 @@ class Net:
 		print ">> " + correct / len(data.x_test) + "% accuracy on test set"
 
 	def ff(self, x):
-		if x.shape is not (48,48,1):
-			print "!! Cannot feed forward, input img is wrong dimension"
+		if x.shape != (1,48,48,1):
+			print "!! Cannot feed forward, input img is wrong dimension: " + str(x.shape)
 		return self.model.predict(x)
 
 	def save_model(self):

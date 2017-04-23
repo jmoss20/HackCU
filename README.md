@@ -1,15 +1,13 @@
 #HackCU
 
-## Vision Dependencies
+## Dependencies
 ```
+websocket-client
 cv2
+scipy
 pandas
 numpy
 tensorflow
 tflearn
-```
-## Node Dependencies
-```
-express
-socket.io
+h5py
 ```

@@ -3,6 +3,8 @@ import numpy as np
 from net import *
 import sys
 
+from websocket import create_connection
+
 from DataLoader import LABELS
 
 CASCADE_PATH = "data/haarcascade_frontalface_default.xml"
@@ -62,7 +64,11 @@ class Cam:
 		# Grayscale
 		if self.grayscale:
 			# Do some shit here so it doesnt break sometimes
-			img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+			try:
+				img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+			except:
+				img = np.zeros((48,48,1))
+				return
 
 		# Resize
 		img = cv2.resize(img, self.out_dims)
@@ -70,19 +76,41 @@ class Cam:
 		return img
 
 def main():
+	uid = sys.argv[1]
+	if sys.argv[4] != "local":
+		ws = create_connection(sys.argv[4])
+
 	c = Cam()
-	n = Net(sys.argv[1], sys.argv[2])
+
+	n = Net(sys.argv[2], sys.argv[3])
 	n.build()
 	n.load_model()
+
 	while True:
-		cv2.imshow('webcam', c.read_adjusted())
-		cv2.imshow('webcamx4', cv2.resize(c.read_adjusted(), (192, 192)))
-		m = n.ff(np.asarray(c.read_adjusted()).reshape(1, 48,48,1))
-		print label[m.index(max(m))], index(max(m)), m		
+		try:
+			cv2.imshow('webcam', c.read_adjusted())
+		except:
+			pass
+		#cv2.imshow('webcamx4', cv2.resize(c.read_adjusted(), (192, 192)))
+		try:
+			m = n.ff(np.asarray(c.read_adjusted()).reshape(1,48,48,1))
+		except:
+			m = [[1,0,0,0,0,0,0]]		
+
+		m = m[0]
+		conf = max(m)
+		emo = m.index(max(m))
+		print LABELS[emo], conf
+
+		if sys.argv[4] != "local":
+			ws.send({"user_id": uid, "emoji": emo, "confidence": conf})
 
 		if cv2.waitKey(1) == 27:
 			break
 
+	if sys.argv[4] != "local":
+		ws.send({"user_id": uid, "emoji": -1, "confidence": conf})
+		ws.close()
 	cv2.destroyAllWindows()
 
 if __name__ == '__main__':
