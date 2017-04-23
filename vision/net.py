@@ -16,7 +16,7 @@ from tflearn.layers.estimator import regression
 class Net:
 	
 	def __init__(self, data_path, model_path):
-		self.data = FER_2013.import_data(data_path)
+		self.data_path = data_path
 		self.model_path = model_path
 
 	def build(self):
@@ -44,17 +44,22 @@ class Net:
 			tensorboard_verbose = 2)
 
 	def train(self):
+		# Grab data
+		self.data = FER_2013.import_data(self.data_path)
+
 		# Make sure it's built
 		self.build()
+
+		# Load model
+		self.load_model()
 		
 		# Train
 		print '>> Training model on training set'
-		print len(self.data.X_train), np.asarray(self.data.y_train).shape
 		self.model.fit(
 			self.data.X_train, self.data.y_train,
 			validation_set = (self.data.X_validate, self.data.y_validate),
-			n_epoch = 100,
-			batch_size = 30,
+			n_epoch = 60,
+			batch_size = 50,
 			shuffle = True,
 			show_metric = True,
 			snapshot_step = 200,
@@ -97,9 +102,6 @@ if __name__ == "__main__":
 	n = Net(dp, mp)
 
 	if (sys.argv[1] == 'train'):
-		print n.data.y_train[48]
-		print n.data.X_train[48], n.data.X_train[48].shape
-		cv2.imshow("show", n.data.X_train[48])
 		n.train()
 		n.save_model()
 

@@ -1,7 +1,9 @@
 import cv2
 import numpy as np
-# from net import Agent
+from net import *
+import sys
 
+from DataLoader import LABELS
 
 CASCADE_PATH = "data/haarcascade_frontalface_default.xml"
 
@@ -69,10 +71,14 @@ class Cam:
 
 def main():
 	c = Cam()
+	n = Net(sys.argv[1], sys.argv[2])
+	n.build()
+	n.load_model()
 	while True:
 		cv2.imshow('webcam', c.read_adjusted())
 		cv2.imshow('webcamx4', cv2.resize(c.read_adjusted(), (192, 192)))
-		
+		m = n.ff(np.asarray(c.read_adjusted()).reshape(1, 48,48,1))
+		print label[m.index(max(m))], index(max(m)), m		
 
 		if cv2.waitKey(1) == 27:
 			break
