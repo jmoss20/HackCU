@@ -49,7 +49,7 @@ class Net:
 		print '>> Training model on training set'
 		print len(self.data.X_train), np.asarray(self.data.y_train).shape
 		self.model.fit(
-			X_train, y_train
+			self.data.X_train, self.data.y_train,
 			validation_set = (self.data.X_validate, self.data.y_validate),
 			n_epoch = 100,
 			batch_size = 30,
