@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			body {
+				background-color: #d0e4f2;
+				margin: 0;
+				padding: 0;
+			}
+
+			.cont2 {
+				margin-top: 120px;
+			}
+
+			ul {
+				list-style: none;
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				margin: 0;
+				padding: 0;
+				text-align: center;
+			}
+
+			li {
+				display: inline-block;
+				width: 24%;
+				text-align: center;
+				margin: 0;
+				font-size: 5rem;
+				padding-top: 28px;
+				text-shadow: 0px 1px 1px #444;
+				height: 300px;
+				-webkit-transition: font-size 0.5s;
+			}
+
+			li:hover {
+				font-size: 5.5rem;
+				cursor: default;
+			}
+
+			li div {
+				color: #363636;
+				font-size: 0.75rem !important;
+				font-family: "Cabin", sans-serif;
+				text-shadow: none !important;
+			}
+
+		</style>
+
+	</head>
+	<body>
+	<ul class="cont" id="faces"></ul>
+	<ul class="cont2" id="names"></ul>
+
+	<script src="socket.io/socket.io.js"></script>
+	<script>
+			var socket = io().connect('http://localhost:3000');
+
+			var people = {}
+
+			function createEmojiPane(obj) {
+				var cont = document.createElement("li");
+				cont.id = obj.user_id + "_emoji";
+				cont.innerHTML = getEmoji(obj.emoji);
+				document.getElementById("faces").appendChild(cont);
+
+				return cont;
+			}
+
+			function createNamePane(obj) {
+				var cont2 = document.createElement("li")
+				cont2.id = obj.user_id + "_name";
+				cont2.innerHTML = "<div>"  + obj.user_id + "</div>";
+				document.getElementById("names").appendChild(cont2);
+
+				return cont2;
+			}
+
+			function updatePane(obj) {
+				obj.emo.innerHTML = getEmoji(obj.emoji);
+				obj.person.innerHTML = "<div>" + obj.user_id + "</div>";
+			}
+
+			function getEmoji (index) {
+				if (index == 0) { return '&#x1F621'}
+				else if (index == 1) { return '&#x1F637'}
+				else if (index == 2) { return '&#x1F628'}
+				else if (index == 3) { return '&#x1F604'}
+				else if (index == 4) { return '&#x1F622'}
+				else if (index == 5) { return '&#x1F649'}
+				else if (index == 6) { return '&#x1F611'}
+			}
+
+			socket.on('emojis', function (obj) {
+				if (obj.emoji >= 0) {
+					if (obj.user_id in people) {
+						people[obj.user_id].emoji = obj.emoji;
+						people[obj.user_id].confidence = obj.confidence;
+						updatePane(people[obj.user_id]);
+					}
+					else {
+						var emoElem = createEmojiPane(obj);
+						var nameElem = createNamePane(obj);
+						people[obj.user_id] = obj;
+						people[obj.user_id].emo = emoElem;
+						people[obj.user_id].person = nameElem;
+					}
+				}
+				else {
+					delete people[obj.user_id];
+					var emoChild = document.getElementById(obj.user_id + "_emoji");
+					var nameChild = document.getElementById(obj.user_id + "_name");
+					emoChild.parentNode.removeChild(emoChild);
+					nameChild.parentNode.removeChild(nameChild);
+				}
+
+			});
+	</script>
+</body>
+</html>
