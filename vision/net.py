@@ -2,6 +2,8 @@ import numpy as np
 import os
 import sys
 
+import cv2
+
 from DataLoader import FER_2013, Data
 
 import tflearn
@@ -95,6 +97,9 @@ if __name__ == "__main__":
 	n = Net(dp, mp)
 
 	if (sys.argv[1] == 'train'):
+		print n.data.y_train[48]
+		print n.data.X_train[48], n.data.X_train[48].shape
+		cv2.imshow("show", n.data.X_train[48])
 		n.train()
 		n.save_model()
 

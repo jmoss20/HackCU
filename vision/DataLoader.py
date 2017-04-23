@@ -34,12 +34,12 @@ class Data:
 		self.X_validate, self.y_validate = zip(*D_validate)
 		self.X_test, self.y_test = zip(*D_test)
 		
-		self.X_train = np.asarray(self.X_train).reshape(len(self.X_train), 48, 48, 1)
-		self.X_validate = np.asarray(self.X_validate).reshape(len(self.X_validate), 48, 48, 1)
-		self.X_test = np.asarray(self.X_test).reshape(len(self.X_test), 48, 48, 1)
-		self.y_train = np.asarray(self.y_train).reshape(len(self.y_train), 7)
-		self.y_validate = np.asarray(self.y_validate).reshape(len(self.y_validate), 7)
-		self.y_test = np.asarray(self.y_test).reshape(len(self.y_test), 7)
+		self.X_train = np.asarray(self.X_train).reshape(len(self.X_train), 48, 48, 1) / 255.0
+		self.X_validate = np.asarray(self.X_validate).reshape(len(self.X_validate), 48, 48, 1) / 255.0
+		self.X_test = np.asarray(self.X_test).reshape(len(self.X_test), 48, 48, 1) / 255.0
+		self.y_train = np.asarray(self.y_train).reshape(len(self.y_train), 7) / 255.0
+		self.y_validate = np.asarray(self.y_validate).reshape(len(self.y_validate), 7) / 255.0
+		self.y_test = np.asarray(self.y_test).reshape(len(self.y_test), 7) / 255.0
 
 class FER_2013:
 	@staticmethod
